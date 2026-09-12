@@ -770,7 +770,7 @@
         if (isOnline || ping > 0) {
             mainStatusCard.className = 'vpn-status-card connected';
             mainStatusIcon.textContent = '✓';
-            mainStatusText.textContent = 'KONEKTADO NA';
+            mainStatusText.textContent = 'CONNECTED';
             mainStatusDesc.textContent = `Gumagamit ng: ${selectedProxyEngine.toUpperCase()}`;
             serverStatusEl.textContent = 'ONLINE';
             serverStatusEl.className = 'monitor-item-value success';
@@ -780,7 +780,7 @@
         } else {
             mainStatusCard.className = 'vpn-status-card disconnected';
             mainStatusIcon.textContent = '✕';
-            mainStatusText.textContent = 'HINDI MAKAKONEKTA';
+            mainStatusText.textContent = 'NOT CONNECTED';
             mainStatusDesc.textContent = 'Suriin ang address o koneksyon';
             serverStatusEl.textContent = 'OFFLINE';
             serverStatusEl.className = 'monitor-item-value error';
