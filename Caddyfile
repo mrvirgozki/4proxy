@@ -1,0 +1,57 @@
+# Cloud Run compatible — gumagana kahit anong ibigay na port
+:8081 {
+    # ✅ Lahat ng gRPC services — siguradong h2c / HTTP/2
+    handle_path /vless-grpc-virgozki {
+        reverse_proxy h2c://127.0.0.1:10012 {
+            transport http {
+                versions h2c
+                flush_interval -1
+                read_timeout 3600s
+                write_timeout 3600s
+            }
+        }
+    }
+
+    handle_path /vmess-grpc-virgozki {
+        reverse_proxy h2c://127.0.0.1:10013 {
+            transport http {
+                versions h2c
+                flush_interval -1
+                read_timeout 3600s
+                write_timeout 3600s
+            }
+        }
+    }
+
+    handle_path /trojan-grpc-virgozki {
+        reverse_proxy h2c://127.0.0.1:10014 {
+            transport http {
+                versions h2c
+                flush_interval -1
+                read_timeout 3600s
+                write_timeout 3600s
+            }
+        }
+    }
+
+    handle_path /ss-grpc-virgozki {
+        reverse_proxy h2c://127.0.0.1:10015 {
+            transport http {
+                versions h2c
+                flush_interval -1
+                read_timeout 3600s
+                write_timeout 3600s
+            }
+        }
+    }
+
+    # ✅ Lahat ng iba — dadaan sa main OpenResty
+    handle /* {
+        reverse_proxy http://127.0.0.1:8080
+    }
+
+    # ✅ Compression at security
+    encode gzip zstd
+    header X-Content-Type-Options nosniff
+    header X-Frame-Options DENY
+}
