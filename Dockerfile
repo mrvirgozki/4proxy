@@ -1,22 +1,21 @@
-# ✅ TANGGALIN NA ANG ENVOY SOURCE — WALANG MANIFEST ERROR NA!
+# ✅ TANGGALIN NA ANG ENVOY SOURCE — DIREKTA NA LANG ANG PAG-INSTALL
 FROM openresty/openresty:alpine
 
-# ✅ 1. UNANG I-ADD ANG REPO, BAGO MAG-INSTALL LAHAT — TAMA NA ANG PAGKAKASUNOD
-RUN echo "http://dl-cdn.alpinelinux.org/alpine/v3.20/community" >> /etc/apk/repositories && \
-    apk add --no-cache ca-certificates wget unzip tini curl haproxy caddy
+# ✅ 1. DEPENDENSIYA + ENVOY (DIREKTA SA ALPINE REPO — WALANG ERROR)
+RUN apk add --no-cache ca-certificates wget unzip tini curl envoy && \
+    echo "http://dl-cdn.alpinelinux.org/alpine/v3.20/community" >> /etc/apk/repositories && \
+    apk add --no-cache haproxy caddy
 
-# ✅ 2. I-DOWNLOAD ANG ENVOY BINARY (WALA SA APK REPO, KAYA DIREKTA NA LANG)
-RUN wget --timeout=240 --tries=5 --no-check-certificate -qO /usr/local/bin/envoy \
-    https://github.com/envoyproxy/envoy/releases/download/v1.32.0/envoy-linux-amd64 && \
-    chmod +x /usr/local/bin/envoy
+# ✅ 2. SIGURADUHIN NAKA-EXECUTE ANG ENVOY
+RUN chmod +x /usr/bin/envoy
 
-# ✅ 3. XRAY DOWNLOAD — MAY TRIPLE FALLBACK
+# ✅ 3. XRAY DOWNLOAD — MAY TRIPLE FALLBACK PARA HINDI MA-FAIL
 RUN set -eux; \
     XRAY_VER="v24.10.31"; \
     FILE_NAME="Xray-linux-64.zip"; \
     PRIMARY="https://github.com/XTLS/Xray-core/releases/download/${XRAY_VER}/${FILE_NAME}"; \
     SECONDARY="https://gh.ddlc.top/${PRIMARY}"; \
-    TERTIARY="https://cdn.jsdelivr.net/gh/XTLS/Xray-core@${XRAY_VER}/${FILE_NAME}"; \
+    TERTIARY="https://hub.fastgit.xyz/XTLS/Xray-core/releases/download/${XRAY_VER}/${FILE_NAME}"; \
     \
     wget --timeout=240 --tries=5 --no-check-certificate -qO /tmp/xray.zip "$PRIMARY" || \
     wget --timeout=240 --tries=5 --no-check-certificate -qO /tmp/xray.zip "$SECONDARY" || \
