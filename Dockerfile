@@ -1,5 +1,5 @@
-# ✅ GAMITIN ANG TAMANG EXISTING VERSION (ALPINE VARIANT AY NASA V1.30.0)
-FROM envoyproxy/envoy:v1.30.0-alpine AS envoy-source
+# ✅ PALITAN ANG VERSION — GAMITIN ANG TAMANG MERONG ALPINE TAG
+FROM envoyproxy/envoy:v1.31.0-alpine AS envoy-source
 
 # Base: OpenResty Alpine
 FROM openresty/openresty:alpine
@@ -13,9 +13,10 @@ RUN apk add --no-cache ca-certificates wget unzip tini curl && \
 COPY --from=envoy-source /usr/local/bin/envoy /usr/local/bin/envoy
 RUN chmod +x /usr/local/bin/envoy
 
-# ✅ 3. FIXED Xray download — may dagdag na mirror backup kung ma-block ang GitHub
-RUN wget --timeout=180 --retry-connrefused --tries=3 -qO /tmp/xray.zip https://github.com/XTLS/Xray-core/releases/download/v24.10.31/Xray-linux-64.zip || \
-    wget --timeout=180 --retry-connrefused --tries=3 -qO /tmp/xray.zip https://ghp.ci/https://github.com/XTLS/Xray-core/releases/download/v24.10.31/Xray-linux-64.zip && \
+# ✅ 3. INAYOS ANG XRAY DOWNLOAD — WALANG LOGIC ERROR SA FALLBACK
+RUN set -e; \
+    (wget --timeout=180 --retry-connrefused --tries=3 -qO /tmp/xray.zip https://github.com/XTLS/Xray-core/releases/download/v24.10.31/Xray-linux-64.zip) || \
+    (wget --timeout=180 --retry-connrefused --tries=3 -qO /tmp/xray.zip https://mirror.ghproxy.com/https://github.com/XTLS/Xray-core/releases/download/v24.10.31/Xray-linux-64.zip); \
     unzip -q /tmp/xray.zip -d /tmp/xray/ && \
     mv /tmp/xray/xray /usr/local/bin/ && \
     mkdir -p /usr/local/share/xray/ /etc/haproxy/ && \
@@ -32,8 +33,8 @@ COPY haproxy.cfg /etc/haproxy/haproxy.cfg
 COPY Caddyfile /etc/Caddyfile
 COPY index.html /usr/local/openresty/nginx/html/index.html
 
-# ✅ 5. FIX OPENRESTY PORT PARA SA CLOUD RUN
-RUN sed -i 's/listen\s*[0-9]\+;/listen ${PORT:-8080} http2;/g' /usr/local/openresty/nginx/conf/nginx.conf
+# ✅ 5. FIX OPENRESTY PORT PARA SA CLOUD RUN — MAS TAMANG SED COMMAND
+RUN sed -i 's/listen\s*[0-9]\+;/listen 8080 http2;/g' /usr/local/openresty/nginx/conf/nginx.conf
 
 # ✅ 6. ENTRYPOINT AT PERMISSIONS
 COPY entrypoint.sh /entrypoint.sh
