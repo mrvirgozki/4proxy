@@ -161,7 +161,8 @@ esac
 
 echo ""
 loading "CHECKING REQUIRED FILES"
-for f in config.json nginx.conf Dockerfile index.html; do
+# ✅ UPDATED: KASAMA NA ANG LAHAT NG CONFIG FILES
+for f in config.json nginx.conf Dockerfile index.html entrypoint.sh envoy.yaml haproxy.cfg Caddyfile; do
     if [ ! -f "$f" ]; then
         echo -e "  ${RED}ERROR: Missing file -> $f${RESET}"
         exit 1
@@ -179,12 +180,14 @@ if [ $? -ne 0 ]; then
 fi
 
 loading "DEPLOYING TO CLOUD RUN IN ${REGION}"
+# ✅ UPDATED: NAKA-SET NA ANG DEFAULT PROXY ENGINE
 gcloud run deploy "$SERVICE_NAME" \
   --image "gcr.io/${PROJECT_ID}/${SERVICE_NAME}" \
   --platform managed --region "$REGION" \
   --cpu "$CPU" --memory "$RAM" --port 8080 \
   --concurrency 800 --timeout 3600 \
   --min-instances 0 --max-instances "$MAX_INSTANCES" \
+  --set-env-vars PROXY_ENGINE=openresty \
   --allow-unauthenticated --project="$PROJECT_ID" --quiet > deploy.log 2>&1
 
 if [ $? -ne 0 ]; then 
