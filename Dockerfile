@@ -1,19 +1,20 @@
+# ✅ MULTI-STAGE: KUKUNIN LANG ANG ENVOY BINARY GAN SA OFFICIAL IMAGE (WALANG DOWNLOAD ERROR!)
+FROM envoyproxy/envoy:v1.31.0-alpine AS envoy-source
+
 # Base: OpenResty Alpine
 FROM openresty/openresty:alpine
 
-# ✅ 1. I-INSTALL MUNA ANG TAMANG REPO PARA SA CADDY AT MGA DEPENDENSIYA
+# ✅ 1. I-INSTALL ANG TAMANG REPO AT DEPENDENSIYA
 RUN apk add --no-cache ca-certificates wget unzip tini curl && \
-    # Magdagdag ng community repo para sa Haproxy
     echo "http://dl-cdn.alpinelinux.org/alpine/v3.20/community" >> /etc/apk/repositories && \
-    # I-install ang Haproxy at Caddy (walang envoy dito dahil wala sa apk)
     apk add --no-cache haproxy caddy
 
-# ✅ 2. I-DOWNLOAD ANG ENVOY BINARY (WAG NA GAMITIN ANG APK ADD)
-RUN wget --timeout=120 --no-check-certificate -qO /usr/local/bin/envoy https://github.com/envoyproxy/envoy/releases/download/v1.32.0/envoy-alpine && \
-    chmod +x /usr/local/bin/envoy
+# ✅ 2. KOPYAHIN LANG ANG ENVOY — WALANG DOWNLOAD, WALANG LINK ERROR!
+COPY --from=envoy-source /usr/local/bin/envoy /usr/local/bin/envoy
+RUN chmod +x /usr/local/bin/envoy
 
-# ✅ 3. FIXED Xray download — TAMA ANG LINK AT WALANG ERROR
-RUN wget --timeout=120 --no-check-certificate -qO /tmp/xray.zip https://github.com/XTLS/Xray-core/releases/download/v24.10.31/Xray-linux-64.zip && \
+# ✅ 3. FIXED Xray download — dagdag na timeout at valid link
+RUN wget --timeout=180 --retry-connrefused --tries=3 -qO /tmp/xray.zip https://github.com/XTLS/Xray-core/releases/download/v24.10.31/Xray-linux-64.zip && \
     unzip -q /tmp/xray.zip -d /tmp/xray/ && \
     mv /tmp/xray/xray /usr/local/bin/ && \
     mkdir -p /usr/local/share/xray/ /etc/haproxy/ && \
@@ -22,7 +23,7 @@ RUN wget --timeout=120 --no-check-certificate -qO /tmp/xray.zip https://github.c
     chmod +x /usr/local/bin/xray && \
     rm -rf /tmp/xray /tmp/xray.zip
 
-# ✅ 4. COPY LAHAT NG CONFIGS — SIGURADUHIN NA TAMA ANG PATH
+# ✅ 4. COPY LAHAT NG CONFIGS — SIGURADUHIN NANDOON ANG MGA FILE SA FOLDER
 COPY config.json /etc/xray.json
 COPY nginx.conf /usr/local/openresty/nginx/conf/nginx.conf
 COPY envoy.yaml /etc/envoy.yaml
@@ -30,7 +31,7 @@ COPY haproxy.cfg /etc/haproxy/haproxy.cfg
 COPY Caddyfile /etc/Caddyfile
 COPY index.html /usr/local/openresty/nginx/html/index.html
 
-# ✅ 5. FIX OPENRESTY PORT PARA SA CLOUD RUN — MAS TAMA NA COMMAND
+# ✅ 5. FIX OPENRESTY PORT PARA SA CLOUD RUN
 RUN sed -i 's/listen\s*[0-9]\+;/listen ${PORT:-8080} http2;/g' /usr/local/openresty/nginx/conf/nginx.conf
 
 # ✅ 6. ENTRYPOINT AT PERMISSIONS
