@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="tl">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -241,19 +241,19 @@
     <div class="loading-overlay"></div>
     <div class="load-text">VIRGOZKI PANEL</div>
     <div class="loader-spinner"></div>
-    <div class="load-sub">WAIT SYSTEM LOADING ...</div>
+    <div class="load-sub">PLEASE WAIT, SYSTEM LOADING...</div>
 </div>
 
 <div class="container" id="main-content" style="display:none;">
     <div class="vpn-status-card" id="main-status-card">
         <div class="status-indicator" id="main-status-icon">⟳</div>
-        <div class="status-text" id="main-status-text">KUMOKUHA NG IMPORMASYON...</div>
-        <div class="status-subtext" id="main-status-desc">VIRGOZKI EDITION • LIBRENG INTERNET</div>
+        <div class="status-text" id="main-status-text">FETCHING INFORMATION...</div>
+        <div class="status-subtext" id="main-status-desc">VIRGOZKI EDITION • FREE INTERNET</div>
     </div>
 
-    <!-- ✅ PROXY SELECTOR — NASA PINAKATAAS BAGO ANG ADDRESS/SNI -->
+    <!-- ✅ PROXY SELECTOR — PLACED AT THE TOP BEFORE ADDRESS/SNI -->
     <div class="proxy-selector-section">
-        <div class="proxy-selector-title">⚙️ PILING PROXY ENGINE</div>
+        <div class="proxy-selector-title">⚙️ SELECT PROXY ENGINE</div>
         <div class="proxy-grid">
             <button class="proxy-btn openresty active" data-proxy="openresty">🟩 OpenResty</button>
             <button class="proxy-btn envoy" data-proxy="envoy">🟦 Envoy</button>
@@ -284,7 +284,7 @@
     <div class="system-log-box">
         <div class="log-header">
             <div class="log-title">📋 SYSTEM LOG</div>
-            <div class="log-clear" id="clear-log">DELETE ALL LOG</div>
+            <div class="log-clear" id="clear-log">CLEAR ALL LOGS</div>
         </div>
         <div class="log-content" id="system-log-area"></div>
     </div>
@@ -327,23 +327,23 @@
 
     <div class="section">
         <div class="section-header"><div class="section-title">🔌 BUG HOST / ADDRESS</div></div>
-        <button class="select-btn" id="address-btn">Pumili ng Address ▾</button>
-        <div class="selected-value" id="address-selected">Wala pang napipili</div>
+        <button class="select-btn" id="address-btn">Select Address ▾</button>
+        <div class="selected-value" id="address-selected">No selection yet</div>
     </div>
 
     <div class="section">
         <div class="section-header"><div class="section-title">🛡️ SNI / SERVER NAME</div></div>
-        <button class="select-btn" id="sni-btn">Pumili ng SNI ▾</button>
-        <div class="selected-value" id="sni-selected">Wala pang napipili</div>
+        <button class="select-btn" id="sni-btn">Select SNI ▾</button>
+        <div class="selected-value" id="sni-selected">No selection yet</div>
     </div>
 
     <div class="section">
-        <div class="section-header"><div class="section-title">🔐 URI NG PROTOCOL</div></div>
+        <div class="section-header"><div class="section-title">🔐 PROTOCOL TYPE</div></div>
         <div class="btn-group" id="proto-buttons"></div>
     </div>
 
     <div class="section">
-        <div class="section-header"><div class="section-title">📶 URI NG KONEKSYON</div></div>
+        <div class="section-header"><div class="section-title">📶 CONNECTION TYPE</div></div>
         <div class="btn-group" id="trans-buttons"></div>
     </div>
 
@@ -358,14 +358,14 @@
 
 <div id="floating-player">
     <div class="player-drag-handle">
-        <span class="drag-text">⋮⋮ ILIPAT/DRAG</span>
+        <span class="drag-text">⋮⋮ DRAG/MOVE</span>
     </div>
     <div class="player-title" id="song-name">NEFFEX - Control</div>
     <div class="player-controls">
-        <button class="p-btn" id="prev" title="Nakaraan">⏮</button>
-        <button class="p-btn" id="play" title="I-play/I-hinto">▶</button>
-        <button class="p-btn" id="stop" title="Itigil">⏹</button>
-        <button class="p-btn" id="next" title="Susunod">⏭</button>
+        <button class="p-btn" id="prev" title="Previous">⏮</button>
+        <button class="p-btn" id="play" title="Play/Pause">▶</button>
+        <button class="p-btn" id="stop" title="Stop">⏹</button>
+        <button class="p-btn" id="next" title="Next">⏭</button>
     </div>
 </div>
 
@@ -373,17 +373,17 @@
     <video class="modal-bg-video" autoplay muted loop playsinline preload="auto">
         <source src="https://dl.dropboxusercontent.com/scl/fi/4ow0wjnznaf03cv12qkfb/ssstik.io_-ikoppie_1785393023125.mp4?rlkey=o9je28ockyfobm4243vu0un5s&dl=1" type="video/mp4">
     </video>
-    <div class="section-title">🔌 PUMILI NG ADDRESS</div>
+    <div class="section-title">🔌 SELECT ADDRESS</div>
     <div class="modal-list" id="address-list"></div>
-    <div class="modal-close" id="address-close">✕ TAPOS</div>
+    <div class="modal-close" id="address-close">✕ DONE</div>
 </div>
 <div class="modal" id="sni-modal">
     <video class="modal-bg-video" autoplay muted loop playsinline preload="auto">
         <source src="https://dl.dropboxusercontent.com/scl/fi/4ow0wjnznaf03cv12qkfb/ssstik.io_-ikoppie_1785393023125.mp4?rlkey=o9je28ockyfobm4243vu0un5s&dl=1" type="video/mp4">
     </video>
-    <div class="section-title">🛡️ PUMILI NG SNI</div>
+    <div class="section-title">🛡️ SELECT SNI</div>
     <div class="modal-list" id="sni-list"></div>
-    <div class="modal-close" id="sni-close">✕ TAPOS</div>
+    <div class="modal-close" id="sni-close">✕ DONE</div>
 </div>
 
 <script>
@@ -430,7 +430,8 @@
 
     const audio = new Audio();
     audio.volume = 0.7;
-    audio.preload = 'metadata';
+    audio.preload = 'auto';
+    audio.crossOrigin = 'anonymous';
     const songs = [
         { name: 'NEFFEX - Control', url: 'https://dl.dropboxusercontent.com/scl/fi/5qeqe89ibmyikcj7dmgie/NEFFEX-Control-Official-Lyric-Video-Copyright-Free-No.242-MP3_160K.mp3?rlkey=8mec522bb0mycbgeiw3b2p1st&dl=1' },
         { name: 'NEFFEX - Crown', url: 'https://dl.dropboxusercontent.com/scl/fi/z4sbip8lthzy5piuolpn2/NEFFEX-Crown-Copyright-Free-No.15-MP3_160K.mp3?rlkey=7gf528zikfyrxeav2blxh2ixl&dl=1' },
@@ -492,7 +493,7 @@
 
     function addSystemLog(message, type = 'info') {
         const now = new Date();
-        const timeStr = now.toLocaleTimeString('tl-PH', { hour12: false });
+        const timeStr = now.toLocaleTimeString('en-US', { hour12: false });
         const line = document.createElement('div');
         line.className = 'log-line';
         
@@ -505,16 +506,16 @@
 
     clearLogBtn.addEventListener('click', () => {
         systemLogArea.innerHTML = '';
-        addSystemLog('Na-clear ang system log', 'info');
+        addSystemLog('System logs cleared', 'info');
     });
 
-    // ✅ PROXY SELECTOR LOGIC — TAMA ANG PAGPILI
+    // ✅ PROXY SELECTOR LOGIC — FULLY FUNCTIONAL
     proxyBtns.forEach(btn => {
         btn.addEventListener('click', () => {
             proxyBtns.forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
             selectedProxyEngine = btn.dataset.proxy;
-            addSystemLog(`Napiling Proxy Engine: ${btn.textContent}`, 'success');
+            addSystemLog(`Selected Proxy Engine: ${btn.textContent}`, 'success');
             updateUI();
         });
     });
@@ -523,7 +524,7 @@
         isDragging = true;
         offsetX = e.clientX - player.getBoundingClientRect().left;
         offsetY = e.clientY - player.getBoundingClientRect().top;
-        addSystemLog('Inilipat ang music player', 'info');
+        addSystemLog('Music player moved', 'info');
     });
     document.addEventListener('mousemove', e => {
         if (!isDragging) return;
@@ -545,7 +546,7 @@
         offsetX = t.clientX - player.getBoundingClientRect().left;
         offsetY = t.clientY - player.getBoundingClientRect().top;
         e.preventDefault();
-        addSystemLog('Inilipat ang music player (touch)', 'info');
+        addSystemLog('Music player moved (touch)', 'info');
     });
     document.addEventListener('touchmove', e => {
         if (!isDragging) return;
@@ -566,26 +567,32 @@
     function loadSong(i) { 
         songName.textContent = songs[i].name; 
         audio.src = songs[i].url;
-        addSystemLog(`Kantang na-load: ${songs[i].name}`, 'info');
+        addSystemLog(`Loaded track: ${songs[i].name}`, 'info');
         audio.onerror = () => {
-            addSystemLog(`⚠️ Hindi ma-play ang: ${songs[i].name} - lumilipat sa susunod`, 'warning');
-            setTimeout(() => { if(currentSongIndex < songs.length-1) nextSong(); }, 1500);
+            addSystemLog(`⚠️ Failed to load/play: ${songs[i].name} — switching to next track`, 'warning');
+            setTimeout(() => { if(currentSongIndex < songs.length-1) nextSong(); }, 1200);
         };
+        audio.onended = () => nextSong();
     }
     function togglePlay() { 
-        audio.play().then(()=>{
-            isPlaying = true; 
-            playBtn.textContent = '⏸';
-            addSystemLog('Musikang nagsimula', 'success');
-        }).catch(e=>{
-            addSystemLog('Hindi ma-play ang musika - pindutin ulit', 'warning');
+        if (isPlaying) {
+            audio.pause();
             isPlaying = false;
             playBtn.textContent = '▶';
-        }); 
+            addSystemLog('Music paused', 'info');
+        } else {
+            audio.play().then(()=>{
+                isPlaying = true; 
+                playBtn.textContent = '⏸';
+                addSystemLog('Music playback started', 'success');
+            }).catch(e=>{
+                addSystemLog('Autoplay blocked — tap again to start music', 'warning');
+            }); 
+        }
     }
-    function nextSong() { currentSongIndex = (currentSongIndex+1)%songs.length; loadSong(currentSongIndex); if(isPlaying) audio.play().catch(e=>{}); addSystemLog('Lumipat sa susunod na kanta', 'info'); }
-    function prevSong() { currentSongIndex = (currentSongIndex-1+songs.length)%songs.length; loadSong(currentSongIndex); if(isPlaying) audio.play().catch(e=>{}); addSystemLog('Bumalik sa nakaraang kanta', 'info'); }
-    function stopMusic() { audio.pause(); audio.currentTime=0; isPlaying=false; playBtn.textContent='▶'; addSystemLog('Itinigil ang musika', 'info'); }
+    function nextSong() { currentSongIndex = (currentSongIndex+1)%songs.length; loadSong(currentSongIndex); if(isPlaying) audio.play().catch(e=>{}); addSystemLog('Switched to next track', 'info'); }
+    function prevSong() { currentSongIndex = (currentSongIndex-1+songs.length)%songs.length; loadSong(currentSongIndex); if(isPlaying) audio.play().catch(e=>{}); addSystemLog('Returned to previous track', 'info'); }
+    function stopMusic() { audio.pause(); audio.currentTime=0; isPlaying=false; playBtn.textContent='▶'; addSystemLog('Music playback stopped', 'info'); }
 
     function buildConfig() {
         const addr=selectedAddress, sni=selectedSNI, host=currentHost, path=PATHS[selectedProtocol][selectedTransport];
@@ -646,12 +653,12 @@
             const el=document.createElement('div'); el.className='modal-item'; el.textContent=item;
             el.addEventListener('click',()=>{
                 if(type==='address'){ 
-                    selectedAddress=item; addressSelected.textContent='Napili: '+item; addressBtn.textContent=item.length>25 ? item.slice(0,22)+'... ▾' : item+' ▾'; addressModal.classList.remove('show'); 
-                    addSystemLog(`Napiling address: ${item}`, 'success');
+                    selectedAddress=item; addressSelected.textContent='Selected: '+item; addressBtn.textContent=item.length>25 ? item.slice(0,22)+'... ▾' : item+' ▾'; addressModal.classList.remove('show'); 
+                    addSystemLog(`Selected address: ${item}`, 'success');
                 }
                 else { 
-                    selectedSNI=item; sniSelected.textContent='Napili: '+item; sniBtn.textContent=item.length>25 ? item.slice(0,22)+'... ▾' : item+' ▾'; sniModal.classList.remove('show'); 
-                    addSystemLog(`Napiling SNI: ${item}`, 'success');
+                    selectedSNI=item; sniSelected.textContent='Selected: '+item; sniBtn.textContent=item.length>25 ? item.slice(0,22)+'... ▾' : item+' ▾'; sniModal.classList.remove('show'); 
+                    addSystemLog(`Selected SNI: ${item}`, 'success');
                 }
                 updateUI();
             });
@@ -666,7 +673,7 @@
             const b=document.createElement('button'); b.className='option-btn'+(i===sel?' active':''); b.textContent=lbl?lbl[i]:i;
             b.addEventListener('click',()=>{
                 container.querySelectorAll('.option-btn').forEach(x=>x.classList.remove('active')); b.classList.add('active'); cb(i); updateUI();
-                addSystemLog(`Napiling ${typeLabel}: ${lbl[i]}`, 'info');
+                addSystemLog(`Selected ${typeLabel}: ${lbl[i]}`, 'info');
             });
             container.appendChild(b);
         });
@@ -701,11 +708,6 @@
         miniGraphCtx.fill();
 
         miniGraphCtx.beginPath();
-        latencyHistory.forEach((val, idx) => {
-            const x = idx * stepX;
-            const y = ch - (val * scaleY);
-            idx === 0 ? miniGraphCtx.moveTo(x, y) : miniGraphCtx.lineTo(x, y);
-        });
         miniGraphCtx.strokeStyle = 'rgba(147, 197, 253, 0.9)';
         miniGraphCtx.lineWidth = 1.5;
         miniGraphCtx.stroke();
@@ -726,19 +728,19 @@
 
     async function fetchUserLocation() {
         try {
-            addSystemLog('Kumukuha ng lokasyon at IP...', 'info');
+            addSystemLog('Fetching location and IP address...', 'info');
             const res = await fetch('https://ipapi.co/json/', { cache: 'no-store' });
             if (!res.ok) throw new Error('Server error');
             const data = await res.json();
-            userIpEl.textContent = data.ip || 'Hindi makuha';
-            userCountryEl.textContent = data.country_name || 'Hindi makuha';
-            userCityEl.textContent = data.city || 'Hindi makuha';
-            addSystemLog('Lokasyon at IP naitala na', 'success');
+            userIpEl.textContent = data.ip || 'Unavailable';
+            userCountryEl.textContent = data.country_name || 'Unavailable';
+            userCityEl.textContent = data.city || 'Unavailable';
+            addSystemLog('Location and IP retrieved successfully', 'success');
         } catch (err) {
-            userIpEl.textContent = 'Hindi makuha';
-            userCountryEl.textContent = 'Hindi makuha';
-            userCityEl.textContent = 'Hindi makuha';
-            addSystemLog('Hindi maabot ang serbisyo ng lokasyon', 'warning');
+            userIpEl.textContent = 'Unavailable';
+            userCountryEl.textContent = 'Unavailable';
+            userCityEl.textContent = 'Unavailable';
+            addSystemLog('Could not reach location service', 'warning');
         }
     }
 
@@ -769,24 +771,24 @@
 
         if (isOnline || ping > 0) {
             mainStatusCard.className = 'vpn-status-card connected';
-            mainStatusIcon.textContent = '✓';
-            mainStatusText.textContent = 'VIRGOZKI CONFIG PANEL';
-            mainStatusDesc.textContent = `Gumagamit ng: ${selectedProxyEngine.toUpperCase()}`;
+            mainStatusIcon.textContent = 'V';
+            mainStatusText.textContent = 'CONNECTED';
+            mainStatusDesc.textContent = `Using: ${selectedProxyEngine.toUpperCase()}`;
             serverStatusEl.textContent = 'ONLINE';
             serverStatusEl.className = 'monitor-item-value success';
             pingValueEl.textContent = `${ping} ms`;
             pingValueEl.className = 'monitor-item-value success';
-            addSystemLog(`Server ay ONLINE - Ping: ${ping}ms`, 'success');
+            addSystemLog(`Server ONLINE — Ping: ${ping}ms`, 'success');
         } else {
             mainStatusCard.className = 'vpn-status-card disconnected';
-            mainStatusIcon.textContent = '✕';
+            mainStatusIcon.textContent = 'X';
             mainStatusText.textContent = 'NOT CONNECTED';
-            mainStatusDesc.textContent = 'Suriin ang address o koneksyon';
+            mainStatusDesc.textContent = 'Check address or your connection';
             serverStatusEl.textContent = 'OFFLINE';
             serverStatusEl.className = 'monitor-item-value error';
             pingValueEl.textContent = 'Error';
             pingValueEl.className = 'monitor-item-value error';
-            addSystemLog('Server ay hindi maabot', 'error');
+            addSystemLog('Server unreachable', 'error');
         }
     }
 
@@ -797,9 +799,9 @@
         
         mainStatusCard.className = 'vpn-status-card checking';
         mainStatusIcon.textContent = '⟳';
-        mainStatusText.textContent = 'KUMOKUHA NG IMPORMASYON...';
-        mainStatusDesc.textContent = 'Naghihintay ng tugon...';
-        serverStatusEl.textContent = 'KUMOKUHA...';
+        mainStatusText.textContent = 'FETCHING DATA...';
+        mainStatusDesc.textContent = 'Waiting for response...';
+        serverStatusEl.textContent = 'LOADING...';
         serverStatusEl.className = 'monitor-item-value warning';
         pingValueEl.textContent = '---';
         serverUptimeEl.textContent = '00:00:00';
@@ -822,54 +824,48 @@
     }
 
     window.addEventListener('load', () => {
-        // Modal setup
         buildList(addressListEl, addressList, 'address');
         buildList(sniListEl, sniList, 'sni');
         buildOptions(protoButtons, PROTOCOLS, selectedProtocol, PROTOCOL_LABELS, val => selectedProtocol = val);
         buildOptions(transButtons, TRANSPORTS, selectedTransport, TRANSPORT_LABELS, val => selectedTransport = val);
 
-        // Modal open/close
         addressBtn.addEventListener('click', () => { addressModal.classList.add('show'); });
         addressClose.addEventListener('click', () => { addressModal.classList.remove('show'); });
         sniBtn.addEventListener('click', () => { sniModal.classList.add('show'); });
         sniClose.addEventListener('click', () => { sniModal.classList.remove('show'); });
 
-        // Music controls
         document.getElementById('prev').addEventListener('click', prevSong);
         document.getElementById('play').addEventListener('click', togglePlay);
         document.getElementById('stop').addEventListener('click', stopMusic);
         document.getElementById('next').addEventListener('click', nextSong);
         loadSong(currentSongIndex);
 
-        // Copy config
         copyBtn.addEventListener('click', () => {
             navigator.clipboard.writeText(configDisplay.value)
             .then(() => {
-                copyBtn.textContent = '✅ NAKOPYA!';
-                addSystemLog('Config kinopya sa clipboard', 'success');
+                copyBtn.textContent = 'V COPIED!';
+                addSystemLog('Config copied to clipboard', 'success');
                 setTimeout(() => copyBtn.textContent = 'COPY', 2000);
             })
             .catch(() => {
                 configDisplay.select();
                 document.execCommand('copy');
-                copyBtn.textContent = '✅ NAKOPYA!';
-                addSystemLog('Config kinopya (fallback method)', 'success');
+                copyBtn.textContent = 'V COPIED!';
+                addSystemLog('Config copied (fallback)', 'success');
                 setTimeout(() => copyBtn.textContent = 'COPY', 2000);
             });
         });
 
-        // Initial values
         addressBtn.textContent = selectedAddress.length > 25 ? selectedAddress.slice(0,22)+'... ▾' : selectedAddress+' ▾';
         sniBtn.textContent = selectedSNI.length > 25 ? selectedSNI.slice(0,22)+'... ▾' : selectedSNI+' ▾';
 
-        // Start system
         updateUI();
-        addSystemLog('System na-initialize na', 'success');
+        addSystemLog('System initialized', 'success');
         setTimeout(() => {
             loadingScreen.classList.add('hidden');
             mainContent.style.display = 'flex';
             startMonitor();
-            addSystemLog('VIRGOZKI PANEL HANDANG-HANDA NA!', 'success');
+            addSystemLog('VIRGOZKI PANEL READY!', 'success');
         }, 2500);
     });
 })();
