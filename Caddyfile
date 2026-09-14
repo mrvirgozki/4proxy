@@ -1,6 +1,6 @@
-# ✅ GAMITIN ANG PORT 8080 PARA TUGMA SA CLOUD RUN
-:8080 {
-    # ===== ANTI-DDOS (NADAGDAG LANG) =====
+# ✅ Tugma sa Cloud Run PORT variable
+:{$PORT:8080} {
+    # ===== ANTI-DDOS =====
     rate_limit {
         requests 30
         window 10s
@@ -8,7 +8,7 @@
     header X-RateLimit-Limit "30"
     header X-RateLimit-Remaining ""
 
-    # ✅ Lahat ng gRPC services — h2c mode (ORIGINAL)
+    # ✅ Lahat ng gRPC services — h2c mode
     handle_path /vless-grpc-virgozki {
         reverse_proxy h2c://127.0.0.1:10012 {
             transport http {
@@ -38,12 +38,12 @@
         }
     }
 
-    # ✅ Main UI at iba pang paths (ORIGINAL)
+    # ✅ Main UI
     handle /* {
         file_server /usr/local/openresty/nginx/html/
     }
 
-    # ✅ Optimization (ORIGINAL)
+    # ✅ Optimization
     encode gzip zstd
     header X-Content-Type-Options nosniff
     header X-Frame-Options DENY
