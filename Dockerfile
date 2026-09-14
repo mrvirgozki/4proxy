@@ -1,17 +1,17 @@
-# GAMITIN ANG OFFICIAL ALPINE IMAGE NA TAMA ANG USER
-FROM openresty/openresty:1.25.3-0-alpine
+# ✅ TAMANG VERSION NA UMIIRAL — HINDI NA MAGKAKA-MISSING MANIFEST
+FROM openresty/openresty:alpine
 
 # ✅ 1. DEPENDENCIES — WALANG BINAGO
 RUN apk update --no-cache && apk add --no-cache ca-certificates wget unzip tini curl haproxy caddy
 
-# ✅ 2. AYOS NA ENVOY DOWNLOAD (TAMA NA ANG FILENAME + FALLBACK)
+# ✅ 2. AYOS NA ENVOY DOWNLOAD
 RUN wget --timeout=90 --tries=3 --no-check-certificate -qO /usr/local/bin/envoy \
     "https://github.com/envoyproxy/envoy/releases/download/v1.31.0/envoy-v1.31.0-linux-x86_64" || \
     wget --timeout=90 --tries=3 --no-check-certificate -qO /usr/local/bin/envoy \
     "https://ghproxy.org/https://github.com/envoyproxy/envoy/releases/download/v1.31.0/envoy-v1.31.0-linux-x86_64" || true && \
     if [ -f /usr/local/bin/envoy ]; then chmod +x /usr/local/bin/envoy; fi
 
-# ✅ 3. AYOS NA XRAY DOWNLOAD (HINDI MAG-FAIL KUNG MAY DELAY)
+# ✅ 3. AYOS NA XRAY DOWNLOAD
 RUN set -x; \
     XRAY_VER="v24.10.31"; \
     FILE_NAME="Xray-linux-64.zip"; \
@@ -35,23 +35,22 @@ COPY haproxy.cfg /etc/haproxy/haproxy.cfg
 COPY Caddyfile /etc/Caddyfile
 COPY index.html /usr/local/openresty/nginx/html/index.html
 
-# ✅ 5. SOBRAHANG IMPORTANTE: AYUSIN ANG PERMISSIONS AT FOLDERS (ITO ANG NAWAWALA DATI!)
+# ✅ 5. PERMISSION FIX — WALANG BINAGO
 RUN mkdir -p /var/run/openresty /var/log/nginx /var/cache/nginx /var/lib/nginx /tmp/nginx
 RUN chown -R root:root /usr/local/openresty /var/run/openresty /var/log/nginx /var/cache/nginx /var/lib/nginx /tmp/nginx
 RUN chmod -R 755 /usr/local/openresty /var/run/openresty /var/log/nginx /var/cache/nginx /var/lib/nginx /tmp/nginx
 RUN chmod -R 777 /var/log/nginx /var/cache/nginx /var/run/openresty
 
-# ✅ 6. ENTRYPOINT — WALANG BINAGO PERO SIGURADUHIN EXECUTABLE
+# ✅ 6. ENTRYPOINT — WALANG BINAGO
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod 755 /entrypoint.sh
 
-# ✅ 7. CLOUD RUN REQUIREMENTS — EKSATONG SET
+# ✅ 7. CLOUD RUN REQUIREMENTS
 ENV XRAY_LOCATION_ASSET=/usr/local/share/xray/
 ENV PORT=8080
 ENV LISTEN_PORT=8080
 EXPOSE 8080
 
-# ✅ GAMITIN ANG ROOT USER PARA WALANG PERMISSION ERROR SA CLOUD RUN
 USER root:root
 
 ENTRYPOINT ["/sbin/tini", "--"]
