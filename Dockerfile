@@ -1,18 +1,17 @@
 FROM openresty/openresty:alpine
 
-# ✅ 1. DEPENDENCIES — IWAS DEAD LINK SA CLOUD SHELL
+# ✅ 1. DEPENDENCIES
 RUN apk update --no-cache && apk add --no-cache ca-certificates wget unzip tini curl haproxy caddy
 
-# ✅ 2. ENVOY — TINANGGAL ANG STRICT CHECK, TULAY ANG BUILD KAHIT MAKALIMOT ANG LINK
+# ✅ 2. ENVOY (fallback kung mabigo download)
 RUN wget --timeout=60 --tries=2 --no-check-certificate -qO /usr/local/bin/envoy \
     "https://github.com/envoyproxy/envoy/releases/download/v1.31.0/envoy-x86_64" || true && \
     [ -f /usr/local/bin/envoy ] && chmod +x /usr/local/bin/envoy
 
-# ✅ 3. XRAY — GAMITIN ANG WORKING MIRROR PARA SA QWIKLABS/CLOUD SHELL
+# ✅ 3. XRAY (siguradong working links)
 RUN set -ux; \
     XRAY_VER="v24.10.31"; \
     FILE_NAME="Xray-linux-64.zip"; \
-    # ✅ ITO ANG SIGURADONG GUMAGANA SA CLOUD SHELL — PALITAN ANG LAHAT NG LUMANG LINK
     PRIMARY="https://github.com/XTLS/Xray-core/releases/download/${XRAY_VER}/${FILE_NAME}"; \
     FALLBACK="https://ghproxy.org/https://github.com/XTLS/Xray-core/releases/download/${XRAY_VER}/${FILE_NAME}"; \
     wget --timeout=60 --tries=2 --no-check-certificate -qO /tmp/xray.zip "$PRIMARY" || \
@@ -25,7 +24,7 @@ RUN set -ux; \
     chmod +x /usr/local/bin/xray && \
     rm -rf /tmp/xray /tmp/xray.zip
 
-# ✅ 4. COPY CONFIGS — WALANG BINAGO
+# ✅ 4. COPY CONFIGS
 COPY config.json /etc/xray.json
 COPY nginx.conf /usr/local/openresty/nginx/conf/nginx.conf
 COPY envoy.yaml /etc/envoy.yaml
@@ -33,11 +32,10 @@ COPY haproxy.cfg /etc/haproxy/haproxy.cfg
 COPY Caddyfile /etc/Caddyfile
 COPY index.html /usr/local/openresty/nginx/html/index.html
 
-# ✅ 5. FIX PERMISSION AT KAILANGANG FOLDER — IWAS START ERROR
-RUN mkdir -p /var/run/openresty /var/log/nginx /var/cache/nginx && \
-    chown -R nginx:nginx /usr/local/openresty /var/run/openresty /var/log/nginx /var/cache/nginx
+# ✅ INAYOS: GAMITIN ANG TAMANG USER (openresty base image gumagamit ng nobody/root, tanggalin na ang chown na nagdudulot ng error)
+RUN mkdir -p /var/run/openresty /var/log/nginx /var/cache/nginx
 
-# ✅ 6. ENTRYPOINT
+# ✅ 5. ENTRYPOINT
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
@@ -47,3 +45,4 @@ EXPOSE 8080
 
 ENTRYPOINT ["/sbin/tini", "--"]
 CMD ["/entrypoint.sh"]
+
