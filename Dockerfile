@@ -3,12 +3,12 @@ FROM openresty/openresty:alpine
 # ✅ 1. DEPENDENCIES
 RUN apk update --no-cache && apk add --no-cache ca-certificates wget unzip tini curl haproxy caddy
 
-# ✅ 2. ENVOY (fallback kung mabigo download)
+# ✅ 2. ENVOY (fallback)
 RUN wget --timeout=60 --tries=2 --no-check-certificate -qO /usr/local/bin/envoy \
     "https://github.com/envoyproxy/envoy/releases/download/v1.31.0/envoy-x86_64" || true && \
     [ -f /usr/local/bin/envoy ] && chmod +x /usr/local/bin/envoy
 
-# ✅ 3. XRAY (siguradong working links)
+# ✅ 3. XRAY (working links)
 RUN set -ux; \
     XRAY_VER="v24.10.31"; \
     FILE_NAME="Xray-linux-64.zip"; \
@@ -24,7 +24,7 @@ RUN set -ux; \
     chmod +x /usr/local/bin/xray && \
     rm -rf /tmp/xray /tmp/xray.zip
 
-# ✅ 4. COPY CONFIGS
+# ✅ 4. COPY CONFIGS — GAMITIN ANG DEFAULT NA LOCATION NG OPENRESTY
 COPY config.json /etc/xray.json
 COPY nginx.conf /usr/local/openresty/nginx/conf/nginx.conf
 COPY envoy.yaml /etc/envoy.yaml
@@ -32,10 +32,10 @@ COPY haproxy.cfg /etc/haproxy/haproxy.cfg
 COPY Caddyfile /etc/Caddyfile
 COPY index.html /usr/local/openresty/nginx/html/index.html
 
-# ✅ INAYOS: GAMITIN ANG TAMANG USER (openresty base image gumagamit ng nobody/root, tanggalin na ang chown na nagdudulot ng error)
+# ✅ 5. KAILANGANG FOLDER LANG — WALANG CHOWN ERROR
 RUN mkdir -p /var/run/openresty /var/log/nginx /var/cache/nginx
 
-# ✅ 5. ENTRYPOINT
+# ✅ 6. ENTRYPOINT
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
@@ -45,4 +45,3 @@ EXPOSE 8080
 
 ENTRYPOINT ["/sbin/tini", "--"]
 CMD ["/entrypoint.sh"]
-
