@@ -4,6 +4,7 @@ set -e
 # Gamitin ang napiling proxy mula sa env var (default: openresty)
 PROXY_ENGINE="${PROXY_ENGINE:-openresty}"
 PORT="${PORT:-8080}"
+export PORT
 
 echo "✅ Napiling Proxy Engine: $PROXY_ENGINE"
 echo "✅ Main port: $PORT"
@@ -36,5 +37,3 @@ case "$PROXY_ENGINE" in
     exec /usr/local/openresty/nginx/sbin/nginx -g "daemon off;"
     ;;
 esac
-
-# ✅ Hindi na kailangan ng restart loop na iyon — ang Cloud Run mismo ang magre-restart kung mag-fail
