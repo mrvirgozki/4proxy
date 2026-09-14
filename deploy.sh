@@ -2,7 +2,7 @@
 # ==============================================================================
 # VIRGOZKI PANEL • MANUAL REGION SELECT ONLY
 # ALL REGIONS WITH COUNTRY • XHTTP FIXED • HTTPUPGRADE INTACT • gRPC ADDED
-# NO AUTO-DETECT • ALL OTHER FILES UNCHANGED
+# NO AUTO-DETECT • NO OTHER FILES CHANGED • +HIGHER RESOURCE OPTIONS
 # ==============================================================================
 
 BOLD='\033[1m'; RESET='\033[0m'
@@ -65,7 +65,7 @@ clear
 echo ""
 echo -e "  ${BOLD}${WHITE}VIRGOZKI PANEL (QWIKLABS OPTIMIZED)${RESET}"
 echo -e "  ${MAGENTA}MADE BY VIRGOZKI${RESET}"
-echo -e "  ${GREEN}✅ MANUAL SELECT ONLY • ALL REGIONS • XHTTP + gRPC ADDED${RESET}"
+echo -e "  ${GREEN}✅ MANUAL SELECT ONLY • ALL REGIONS • XHTTP + gRPC + HIGHER SPECS${RESET}"
 echo ""
 
 PROJECT_ID=$(gcloud config get-value project 2>/dev/null | tr -d '[:space:]')
@@ -140,28 +140,29 @@ echo -e "  ${CYAN}SELECT MODE:${RESET}"
 echo -e "  ${YELLOW}1) AUTO         (1 vCPU / 2Gi  RAM) ✅ Recommended for Qwiklab${RESET}"
 echo -e "  ${YELLOW}2) HIGH         (2 vCPU / 4Gi  RAM)${RESET}"
 echo -e "  ${YELLOW}3) STABLE       (4 vCPU / 8Gi  RAM)${RESET}"
-echo -e "  ${YELLOW}4) CUSTOM       (Your own specs)${RESET}"
+echo -e "  ${YELLOW}4) PERFORMANCE  (8 vCPU / 16Gi RAM)${RESET}"
+echo -e "  ${YELLOW}5) CUSTOM       (Your own specs)${RESET}"
 echo ""
 read -r -p "$(echo -e "  ${CYAN}CHOICE: ${RESET}")" MODE_CHOICE
 
 case "$MODE_CHOICE" in
-    1) CPU="1"; RAM="2Gi"; MODE="AUTO"     ; MAX_INSTANCES="2";;
-    2) CPU="2"; RAM="4Gi"; MODE="HIGH"     ; MAX_INSTANCES="2";;
-    3) CPU="4"; RAM="8Gi"; MODE="STABLE"   ; MAX_INSTANCES="1";;
-    4)
+    1) CPU="1"; RAM="2Gi"; MODE="AUTO"         ; MAX_INSTANCES="3";;
+    2) CPU="2"; RAM="4Gi"; MODE="HIGH"         ; MAX_INSTANCES="4";;
+    3) CPU="4"; RAM="8Gi"; MODE="STABLE"       ; MAX_INSTANCES="5";;
+    4) CPU="8"; RAM="16Gi"; MODE="PERFORMANCE" ; MAX_INSTANCES="5";;
+    5)
         echo ""
-        read -r -p "$(echo -e "  ${CYAN}CPU (1/2/4): ${RESET}")" CPU
-        read -r -p "$(echo -e "  ${CYAN}RAM (2Gi/4Gi/8Gi): ${RESET}")" RAM
+        read -r -p "$(echo -e "  ${CYAN}CPU (1/2/4/8): ${RESET}")" CPU
+        read -r -p "$(echo -e "  ${CYAN}RAM (2Gi/4Gi/8Gi/16Gi): ${RESET}")" RAM
         echo ""
-        read -r -p "$(echo -e "  ${CYAN}MAX INSTANCES (1-3): ${RESET}")" MAX_INSTANCES
+        read -r -p "$(echo -e "  ${CYAN}MAX INSTANCES (1-5): ${RESET}")" MAX_INSTANCES
         MODE="CUSTOM"
         ;;
-    *) CPU="1"; RAM="2Gi"; MODE="DEFAULT"; MAX_INSTANCES="2";;
+    *) CPU="1"; RAM="2Gi"; MODE="DEFAULT"; MAX_INSTANCES="3";;
 esac
 
 echo ""
 loading "CHECKING REQUIRED FILES"
-# ✅ UPDATED: KASAMA NA ANG LAHAT NG CONFIG FILES
 for f in config.json nginx.conf Dockerfile index.html entrypoint.sh envoy.yaml haproxy.cfg Caddyfile; do
     if [ ! -f "$f" ]; then
         echo -e "  ${RED}ERROR: Missing file -> $f${RESET}"
@@ -180,7 +181,6 @@ if [ $? -ne 0 ]; then
 fi
 
 loading "DEPLOYING TO CLOUD RUN IN ${REGION}"
-# ✅ UPDATED: NAKA-SET NA ANG DEFAULT PROXY ENGINE
 gcloud run deploy "$SERVICE_NAME" \
   --image "gcr.io/${PROJECT_ID}/${SERVICE_NAME}" \
   --platform managed --region "$REGION" \
@@ -203,7 +203,6 @@ CLEAN_HOST=$(echo "$SERVICE_URL" | sed 's|https://||')
 VMESS_UUID="b831381d-6324-4d53-ad4f-8cda48b30811"
 SS_B64=$(echo -n "aes-256-gcm:virgozki" | base64 -w0)
 
-# ✅ LAHAT NG LINKS – TAMA NA ANG XHTTP + DAGDAG NA ANG gRPC
 VLESS_WS="vless://${VMESS_UUID}@${CLEAN_HOST}:443?encryption=none&type=ws&path=/vless-virgozki&host=${CLEAN_HOST}&security=tls&sni=${CLEAN_HOST}#VLESS-WS"
 VLESS_HU="vless://${VMESS_UUID}@${CLEAN_HOST}:443?encryption=none&type=httpupgrade&path=/vless-virgozki-hu&host=${CLEAN_HOST}&security=tls&sni=${CLEAN_HOST}#VLESS-HU"
 VLESS_XHTTP="vless://${VMESS_UUID}@${CLEAN_HOST}:443?encryption=none&type=xhttp&path=/vless-virgozki-xhttp&host=${CLEAN_HOST}&security=tls&sni=${CLEAN_HOST}&mode=packet-upstream#VLESS-XHTTP"
@@ -235,7 +234,7 @@ echo -e "  ${CYAN}DASHBOARD: ${GREEN}${SERVICE_URL}${RESET}"
 echo -e "  ${CYAN}HOST:      ${GREEN}${CLEAN_HOST}${RESET}"
 echo -e "  ${CYAN}PORT:      ${GREEN}443${RESET}"
 echo -e "  ${CYAN}PASSWORD:  ${GREEN}virgozki${RESET}"
-echo -e "  ${CYAN}MODE:      ${GREEN}${MODE} (${CPU} vCPU / ${RAM})${RESET}"
+echo -e "  ${CYAN}MODE:      ${GREEN}${MODE} (${CPU} vCPU / ${RAM}) • MAX INST: ${MAX_INSTANCES}${RESET}"
 echo ""
 
 echo -e "  ${YELLOW}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
@@ -300,4 +299,4 @@ fi
 
 # ✅ CLEANUP
 rm -f build.log deploy.log
-echo -e "\n  ${GREEN}✅ SCRIPT FINISHED • ALL PROTOCOLS ADDED • NO CHANGES TO OLD SETUP${RESET}"
+echo -e "\n  ${GREEN}✅ SCRIPT FINISHED • SPECS UPGRADED • NO CHANGES TO OLD SETUP${RESET}"
