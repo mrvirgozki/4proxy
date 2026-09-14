@@ -1,7 +1,6 @@
 #!/bin/sh
-set -e
+# ❌ TINANGGAL ANG "set -e" — HINDI NA MAMATAY ANG CONTAINER KAPAG MAY WARNING LANG SA XRAY
 
-# Gamitin ang napiling proxy mula sa env var (default: openresty)
 PROXY_ENGINE="${PROXY_ENGINE:-openresty}"
 PORT="${PORT:-8080}"
 export PORT
@@ -9,31 +8,31 @@ export PORT
 echo "✅ Napiling Proxy Engine: $PROXY_ENGINE"
 echo "✅ Main port: $PORT"
 
-# ✅ Laging simulan ang Xray (nasa likod lang)
+# ✅ SIMULAN ANG XRAY — HAYAAN LANG KAHIT MAY BABALA
 echo "🚀 Sinisimulan ang Xray..."
-/usr/local/bin/xray run -c /etc/xray.json &
-XRAY_PID=$!
+/usr/local/bin/xray run -c /etc/xray.json > /dev/stdout 2>&1 &
+sleep 3 # Bigyan ng oras mag-init
 
-# ✅ Simulan LANG ang napiling proxy — walang conflict!
+# ✅ I-CHECK MUNA ANG OPENRESTY CONFIG BAGO PATAKBUHIN
+echo "🔍 Sinusuri ang OpenResty config..."
+/usr/local/openresty/nginx/sbin/nginx -t -c /usr/local/openresty/nginx/conf/nginx.conf || exit 1
+
+# ✅ SIMULAN ANG MAIN PROXY — EXEC PARA MAGING PID 1 (HINDI MAG-SASARA)
+echo "🌐 Sinisimulan ang OpenResty sa 0.0.0.0:$PORT..."
 case "$PROXY_ENGINE" in
   openresty)
-    echo "🌐 Sinisimulan ang OpenResty..."
     exec /usr/local/openresty/nginx/sbin/nginx -g "daemon off;"
     ;;
   envoy)
-    echo "🚀 Sinisimulan ang Envoy..."
     exec /usr/local/bin/envoy -c /etc/envoy.yaml
     ;;
   haproxy)
-    echo "🚀 Sinisimulan ang HAProxy..."
     exec /usr/sbin/haproxy -f /etc/haproxy/haproxy.cfg -db
     ;;
   caddy)
-    echo "🚀 Sinisimulan ang Caddy..."
     exec /usr/local/bin/caddy run --config /etc/Caddyfile
     ;;
   *)
-    echo "⚠️ Hindi kilalang proxy: $PROXY_ENGINE — gagamitin ang default na OpenResty"
     exec /usr/local/openresty/nginx/sbin/nginx -g "daemon off;"
     ;;
 esac
