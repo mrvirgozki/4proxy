@@ -7,12 +7,15 @@ export PORT
 echo "✅ Napiling Proxy Engine: $PROXY_ENGINE"
 echo "✅ Main port: $PORT"
 
-# ✅ [DINAGDAG LANG] IPALIT MUNA ANG ${PORT} SA LAHAT NG TEMPLATE FILE
+# ✅ IPALIT MUNA ANG ${PORT} SA LAHAT NG TEMPLATE FILE
 echo "🔎 Pinapalitan ang PORT variable sa mga config files..."
 envsubst '${PORT}' < /etc/nginx.conf.template > /usr/local/openresty/nginx/conf/nginx.conf
 envsubst '${PORT}' < /etc/envoy.yaml.template > /etc/envoy.yaml
 envsubst '${PORT}' < /etc/haproxy/haproxy.cfg.template > /etc/haproxy/haproxy.cfg
 envsubst '${PORT}' < /etc/Caddyfile.template > /etc/Caddyfile
+
+# ✅ ✨ DAGDAG NA SIGURADO: Ayusin mismo ang listen address
+sed -i "s|listen.*\${PORT}|listen 0.0.0.0:${PORT}|g" /usr/local/openresty/nginx/conf/nginx.conf
 
 # ✅ SIMULAN ANG XRAY — HAYAAN LANG KAHIT MAY BABALA
 echo "🚀 Sinisimulan ang Xray..."
@@ -25,7 +28,7 @@ echo "✅ Xray started with PID: $XRAY_PID"
 echo "🔍 Sinusuri ang OpenResty config..."
 /usr/local/openresty/nginx/sbin/nginx -t -c /usr/local/openresty/nginx/conf/nginx.conf || exit 1
 
-# ✅ SIMULAN ANG MAIN PROXY
+# ✅ SIMULAN ANG MAIN PROXY — SIGURADONG NAKIKINIG SA TAMANG ADDRESS
 echo "🌐 Sinisimulan ang $PROXY_ENGINE sa 0.0.0.0:$PORT..."
 case "$PROXY_ENGINE" in
   openresty)
@@ -46,6 +49,3 @@ case "$PROXY_ENGINE" in
     exec /usr/local/openresty/nginx/sbin/nginx -g "daemon off;"
     ;;
 esac
-
-# ✅ HINDI NA KAILANGAN — KAPAG GUMAMIT KA NG exec, NAGIGING PID 1 ANG NGINX AT HINDI MAG-SASARA
-
