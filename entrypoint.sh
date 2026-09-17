@@ -1,36 +1,72 @@
 #!/bin/bash
+set -e
 
-# Default values
 PROXY_ENGINE="${PROXY_ENGINE:-openresty}"
 PORT="${PORT:-8080}"
 
-echo "✅ Proxy: $PROXY_ENGINE | Port: $PORT"
+echo "================================="
+echo "Proxy: $PROXY_ENGINE"
+echo "Port: $PORT"
+echo "================================="
 
-# Siguraduhin ang mga folder
 mkdir -p /tmp /var/log
 
-# Simulan Xray sa background
 echo "🚀 Starting Xray..."
-/usr/local/bin/xray run -c /etc/xray.json &
+/usr/local/bin/xray run -config /etc/xray.json &
+XRAY_PID=$!
+
 sleep 1
 
-# Simulan ang napiling proxy
-echo "🌐 Starting main service..."
+if ! kill -0 "$XRAY_PID" 2>/dev/null; then
+    echo "❌ ERROR: Xray failed to start"
+    exit 1
+fi
+
+echo "🌐 Starting main service: $PROXY_ENGINE"
+
 case "$PROXY_ENGINE" in
+
   openresty)
-    exec /usr/local/openresty/nginx/sbin/nginx -g "daemon off;"
+    echo "🔍 Checking OpenResty configuration..."
+    /usr/local/openresty/nginx/sbin/nginx \
+      -t -c /usr/local/openresty/nginx/conf/nginx.conf
+
+    echo "✅ Starting OpenResty on port $PORT..."
+    exec /usr/local/openresty/nginx/sbin/nginx \
+      -c /usr/local/openresty/nginx/conf/nginx.conf \
+      -g "daemon off;"
     ;;
+
   envoy)
+    echo "🔍 Checking Envoy configuration..."
+    /usr/local/bin/envoy --mode validate -c /etc/envoy.yaml
+
+    echo "✅ Starting Envoy..."
     exec /usr/local/bin/envoy -c /etc/envoy.yaml
     ;;
+
   haproxy)
+    echo "🔍 Checking HAProxy configuration..."
+    /usr/sbin/haproxy -c -f /etc/haproxy/haproxy.cfg
+
+    echo "✅ Starting HAProxy..."
     exec /usr/sbin/haproxy -f /etc/haproxy/haproxy.cfg -db
     ;;
-  caddy)
-    exec /usr/bin/caddy run --config /etc/Caddyfile --listen :$PORT
-    ;;
-  *)
-    exec /usr/local/openresty/nginx/sbin/nginx -g "daemon off;"
-    ;;
-esac
 
+  caddy)
+    echo "🔍 Checking Caddy configuration..."
+    /usr/bin/caddy validate --config /etc/Caddyfile
+
+    echo "✅ Starting Caddy on port $PORT..."
+    exec /usr/bin/caddy run \
+      --config /etc/Caddyfile \
+      --adapter caddyfile
+    ;;
+
+  *)
+    echo "❌ Unknown PROXY_ENGINE: $PROXY_ENGINE"
+    echo "Available: openresty, envoy, haproxy, caddy"
+    exit 1
+    ;;
+
+esac
