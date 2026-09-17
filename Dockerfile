@@ -2,26 +2,20 @@ FROM openresty/openresty:alpine
 
 # ✅ I-install lahat ng kailangan
 RUN apk update --no-cache && apk add --no-cache \
-    ca-certificates wget unzip tini curl haproxy caddy gettext
+    ca-certificates wget unzip tini curl haproxy caddy
 
-# ✅ Envoy Download — may fallback link na
+# ✅ Ayos na Envoy Download (direkta, walang kumplikadong fallback)
 RUN set -eux; \
-    wget --timeout=300 --tries=3 --no-check-certificate \
+    wget --timeout=300 --tries=5 --no-check-certificate \
     -O /usr/local/bin/envoy \
-    https://github.com/envoyproxy/envoy/releases/download/v1.31.0/envoy-1.31.0-linux-x86_64 || \
-    wget --timeout=300 --tries=3 --no-check-certificate \
-    -O /usr/local/bin/envoy \
-    https://ghfast.top/https://github.com/envoyproxy/envoy/releases/download/v1.31.0/envoy-1.31.0-linux-x86_64; \
+    https://github.com/envoyproxy/envoy/releases/download/v1.31.0/envoy-1.31.0-linux-x86_64; \
     chmod +x /usr/local/bin/envoy
 
-# ✅ Xray Download — may fallback na rin, inuna ang folder
+# ✅ Ayos na Xray Download (inuna ang folder)
 RUN set -eux; \
-    wget --timeout=300 --tries=3 --no-check-certificate \
+    wget --timeout=300 --tries=5 --no-check-certificate \
     -O /tmp/xray.zip \
-    https://github.com/XTLS/Xray-core/releases/download/v24.10.31/Xray-linux-64.zip || \
-    wget --timeout=300 --tries=3 --no-check-certificate \
-    -O /tmp/xray.zip \
-    https://ghfast.top/https://github.com/XTLS/Xray-core/releases/download/v24.10.31/Xray-linux-64.zip; \
+    https://github.com/XTLS/Xray-core/releases/download/v24.10.31/Xray-linux-64.zip; \
     unzip -q /tmp/xray.zip -d /tmp/xray/; \
     mkdir -p /usr/local/share/xray /etc/haproxy; \
     mv /tmp/xray/xray /usr/local/bin/; \
@@ -30,12 +24,12 @@ RUN set -eux; \
     chmod +x /usr/local/bin/xray; \
     rm -rf /tmp/xray /tmp/xray.zip
 
-# ✅ Kopyahin ang mga config files
+# ✅ KOPYA DIREKTA SA TAMANG LOKASYON — WALANG .TEMPLATE!
 COPY config.json /etc/xray.json
-COPY nginx.conf /etc/nginx.conf.template
-COPY envoy.yaml /etc/envoy.yaml.template
-COPY haproxy.cfg /etc/haproxy/haproxy.cfg.template
-COPY Caddyfile /etc/Caddyfile.template
+COPY nginx.conf /usr/local/openresty/nginx/conf/nginx.conf
+COPY envoy.yaml /etc/envoy.yaml
+COPY haproxy.cfg /etc/haproxy/haproxy.cfg
+COPY Caddyfile /etc/Caddyfile
 COPY index.html /usr/local/openresty/nginx/html/index.html
 
 # ✅ Ayusin ang mga folder at pahintulot
