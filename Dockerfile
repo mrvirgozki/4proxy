@@ -1,36 +1,30 @@
 FROM openresty/openresty:alpine
 
-# Magdagdag ng mga kailangang pakete
+# ✅ I-install lahat ng kailangan (walang palya)
 RUN apk update --no-cache && apk add --no-cache \
     ca-certificates wget unzip tini curl haproxy caddy gettext
 
-# ✅ AYOS NA LINK: pinalitan ang ghproxy.com ng gumaganang ghfast.top
+# ✅ INAYOS NA ENVOY DOWNLOAD (tama ang pangalan, simpleng paraan)
 RUN set -eux; \
-    ENVOY_VER="v1.31.0"; \
-    FILE_NAME="envoy-v1.31.0-linux-x86_64"; \
-    PRIMARY="https://github.com/envoyproxy/envoy/releases/download/${ENVOY_VER}/${FILE_NAME}"; \
-    FALLBACK="https://ghfast.top/https://github.com/envoyproxy/envoy/releases/download/${ENVOY_VER}/${FILE_NAME}"; \
-    (wget --timeout=120 --tries=5 --no-check-certificate -qO /usr/local/bin/envoy "$PRIMARY" || \
-     wget --timeout=120 --tries=5 --no-check-certificate -qO /usr/local/bin/envoy "$FALLBACK"); \
+    wget --timeout=300 --tries=3 --no-check-certificate \
+    -O /usr/local/bin/envoy \
+    https://github.com/envoyproxy/envoy/releases/download/v1.31.0/envoy-1.31.0-linux-x86_64; \
     chmod +x /usr/local/bin/envoy
 
-# ✅ AYOS NA LINK: parehong palitan sa Xray download
+# ✅ INAYOS NA XRAY DOWNLOAD (tama ang pangalan at file)
 RUN set -eux; \
-    XRAY_VER="v24.10.31"; \
-    FILE_NAME="Xray-linux-64.zip"; \
-    PRIMARY="https://github.com/XTLS/Xray-core/releases/download/${XRAY_VER}/${FILE_NAME}"; \
-    FALLBACK="https://ghfast.top/https://github.com/XTLS/Xray-core/releases/download/${XRAY_VER}/${FILE_NAME}"; \
-    (wget --timeout=120 --tries=5 --no-check-certificate -qO /tmp/xray.zip "$PRIMARY" || \
-     wget --timeout=120 --tries=5 --no-check-certificate -qO /tmp/xray.zip "$FALLBACK"); \
+    wget --timeout=300 --tries=3 --no-check-certificate \
+    -O /tmp/xray.zip \
+    https://github.com/XTLS/Xray-core/releases/download/v24.10.31/Xray-linux-64.zip; \
     unzip -q /tmp/xray.zip -d /tmp/xray/; \
     mv /tmp/xray/xray /usr/local/bin/; \
-    mkdir -p /usr/local/share/xray/ /etc/haproxy/; \
     mv /tmp/xray/geoip.dat /usr/local/share/xray/; \
     mv /tmp/xray/geosite.dat /usr/local/share/xray/; \
+    mkdir -p /usr/local/share/xray /etc/haproxy; \
     chmod +x /usr/local/bin/xray; \
     rm -rf /tmp/xray /tmp/xray.zip
 
-# ✅ TAMA NA ITO: kinokopya ang nginx.conf mula sa folder papunta bilang template
+# ✅ COPY NG FILES (tugma sa setup mo)
 COPY config.json /etc/xray.json
 COPY nginx.conf /etc/nginx.conf.template
 COPY envoy.yaml /etc/envoy.yaml.template
@@ -38,21 +32,20 @@ COPY haproxy.cfg /etc/haproxy/haproxy.cfg.template
 COPY Caddyfile /etc/Caddyfile.template
 COPY index.html /usr/local/openresty/nginx/html/index.html
 
-# Gumawa ng mga direktoryo at ayusin ang mga pahintulot
+# ✅ Ayos ng folder at permissions
 RUN mkdir -p /var/run/openresty /var/log/nginx /var/cache/nginx /var/lib/nginx /tmp/nginx /var/log/xray /var/log/envoy; \
     chown -R root:root /usr/local/openresty /var/run /var/log /var/cache /var/lib /tmp; \
     chmod -R 755 /usr/local/openresty /var/run /var/log /var/cache /var/lib /tmp
 
-# Kopyahin ang entrypoint
+# ✅ Entrypoint
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod 755 /entrypoint.sh
 
-# Mga Environment Variable (sumusunod sa Cloud Run standard)
 ENV XRAY_LOCATION_ASSET=/usr/local/share/xray/
 ENV PORT=8080
 EXPOSE 8080
 
 USER root:root
-
 ENTRYPOINT ["/sbin/tini", "--"]
 CMD ["/entrypoint.sh"]
+
