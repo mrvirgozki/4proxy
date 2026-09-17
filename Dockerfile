@@ -4,22 +4,22 @@ FROM openresty/openresty:alpine
 RUN apk update --no-cache && apk add --no-cache \
     ca-certificates wget unzip tini curl haproxy caddy gettext
 
-# ✅ Ayos na pag-download ng Envoy (gumagamit ng gumaganang mirror)
+# ✅ AYOS NA LINK: pinalitan ang ghproxy.com ng gumaganang ghfast.top
 RUN set -eux; \
     ENVOY_VER="v1.31.0"; \
     FILE_NAME="envoy-v1.31.0-linux-x86_64"; \
     PRIMARY="https://github.com/envoyproxy/envoy/releases/download/${ENVOY_VER}/${FILE_NAME}"; \
-    FALLBACK="https://ghproxy.com/https://github.com/envoyproxy/envoy/releases/download/${ENVOY_VER}/${FILE_NAME}"; \
+    FALLBACK="https://ghfast.top/https://github.com/envoyproxy/envoy/releases/download/${ENVOY_VER}/${FILE_NAME}"; \
     (wget --timeout=120 --tries=5 --no-check-certificate -qO /usr/local/bin/envoy "$PRIMARY" || \
      wget --timeout=120 --tries=5 --no-check-certificate -qO /usr/local/bin/envoy "$FALLBACK"); \
     chmod +x /usr/local/bin/envoy
 
-# ✅ Ayos na pag-download ng Xray
+# ✅ AYOS NA LINK: parehong palitan sa Xray download
 RUN set -eux; \
     XRAY_VER="v24.10.31"; \
     FILE_NAME="Xray-linux-64.zip"; \
     PRIMARY="https://github.com/XTLS/Xray-core/releases/download/${XRAY_VER}/${FILE_NAME}"; \
-    FALLBACK="https://ghproxy.com/https://github.com/XTLS/Xray-core/releases/download/${XRAY_VER}/${FILE_NAME}"; \
+    FALLBACK="https://ghfast.top/https://github.com/XTLS/Xray-core/releases/download/${XRAY_VER}/${FILE_NAME}"; \
     (wget --timeout=120 --tries=5 --no-check-certificate -qO /tmp/xray.zip "$PRIMARY" || \
      wget --timeout=120 --tries=5 --no-check-certificate -qO /tmp/xray.zip "$FALLBACK"); \
     unzip -q /tmp/xray.zip -d /tmp/xray/; \
@@ -30,7 +30,7 @@ RUN set -eux; \
     chmod +x /usr/local/bin/xray; \
     rm -rf /tmp/xray /tmp/xray.zip
 
-# Kopyahin ang mga config file
+# ✅ TAMA NA ITO: kinokopya ang nginx.conf mula sa folder papunta bilang template
 COPY config.json /etc/xray.json
 COPY nginx.conf /etc/nginx.conf.template
 COPY envoy.yaml /etc/envoy.yaml.template
@@ -56,4 +56,3 @@ USER root:root
 
 ENTRYPOINT ["/sbin/tini", "--"]
 CMD ["/entrypoint.sh"]
-
