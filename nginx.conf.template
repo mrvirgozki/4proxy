@@ -19,8 +19,8 @@ http {
     grpc_read_timeout 3600s;
 
     server {
-        listen 0.0.0.0:8080 http2;
-        listen [::]:8080 http2;  # ✅ DAGDAG LANG ITO — IPv6 support
+        listen 0.0.0.0:${PORT} http2;
+        listen [::]:${PORT} http2;  # ✅ DAGDAG LANG ITO — IPv6 support
         server_name _;
 
         # ===== ANTI-DDOS LIMITS =====
