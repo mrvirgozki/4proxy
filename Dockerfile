@@ -1,42 +1,53 @@
 FROM openresty/openresty:alpine
 
-RUN apk update --no-cache && apk add --no-cache ca-certificates wget unzip tini curl haproxy caddy
+# Magdagdag ng mga kailangang pakete
+RUN apk update --no-cache && apk add --no-cache \
+    ca-certificates wget unzip tini curl haproxy caddy gettext
 
-RUN wget --timeout=90 --tries=3 --no-check-certificate -qO /usr/local/bin/envoy \
-    "https://github.com/envoyproxy/envoy/releases/download/v1.31.0/envoy-v1.31.0-linux-x86_64" || \
-    wget --timeout=90 --tries=3 --no-check-certificate -qO /usr/local/bin/envoy \
-    "https://ghproxy.org/https://github.com/envoyproxy/envoy/releases/download/v1.31.0/envoy-v1.31.0-linux-x86_64" || true && \
-    [ -f /usr/local/bin/envoy ] && chmod +x /usr/local/bin/envoy
+# ✅ Ayos na pag-download ng Envoy (gumagamit ng gumaganang mirror)
+RUN set -eux; \
+    ENVOY_VER="v1.31.0"; \
+    FILE_NAME="envoy-v1.31.0-linux-x86_64"; \
+    PRIMARY="https://github.com/envoyproxy/envoy/releases/download/${ENVOY_VER}/${FILE_NAME}"; \
+    FALLBACK="https://ghproxy.com/https://github.com/envoyproxy/envoy/releases/download/${ENVOY_VER}/${FILE_NAME}"; \
+    (wget --timeout=120 --tries=5 --no-check-certificate -qO /usr/local/bin/envoy "$PRIMARY" || \
+     wget --timeout=120 --tries=5 --no-check-certificate -qO /usr/local/bin/envoy "$FALLBACK"); \
+    chmod +x /usr/local/bin/envoy
 
-RUN set -x; \
+# ✅ Ayos na pag-download ng Xray
+RUN set -eux; \
     XRAY_VER="v24.10.31"; \
     FILE_NAME="Xray-linux-64.zip"; \
     PRIMARY="https://github.com/XTLS/Xray-core/releases/download/${XRAY_VER}/${FILE_NAME}"; \
-    FALLBACK="https://ghproxy.org/https://github.com/XTLS/Xray-core/releases/download/${XRAY_VER}/${FILE_NAME}"; \
-    (wget --timeout=120 --tries=3 --no-check-certificate -qO /tmp/xray.zip "$PRIMARY" || \
-     wget --timeout=120 --tries=3 --no-check-certificate -qO /tmp/xray.zip "$FALLBACK") && \
-    unzip -q /tmp/xray.zip -d /tmp/xray/ && \
-    mv /tmp/xray/xray /usr/local/bin/ && \
-    mkdir -p /usr/local/share/xray/ /etc/haproxy/ && \
-    mv /tmp/xray/geoip.dat /usr/local/share/xray/ && \
-    mv /tmp/xray/geosite.dat /usr/local/share/xray/ && \
-    chmod +x /usr/local/bin/xray && \
+    FALLBACK="https://ghproxy.com/https://github.com/XTLS/Xray-core/releases/download/${XRAY_VER}/${FILE_NAME}"; \
+    (wget --timeout=120 --tries=5 --no-check-certificate -qO /tmp/xray.zip "$PRIMARY" || \
+     wget --timeout=120 --tries=5 --no-check-certificate -qO /tmp/xray.zip "$FALLBACK"); \
+    unzip -q /tmp/xray.zip -d /tmp/xray/; \
+    mv /tmp/xray/xray /usr/local/bin/; \
+    mkdir -p /usr/local/share/xray/ /etc/haproxy/; \
+    mv /tmp/xray/geoip.dat /usr/local/share/xray/; \
+    mv /tmp/xray/geosite.dat /usr/local/share/xray/; \
+    chmod +x /usr/local/bin/xray; \
     rm -rf /tmp/xray /tmp/xray.zip
 
+# Kopyahin ang mga config file
 COPY config.json /etc/xray.json
-COPY nginx.conf /usr/local/openresty/nginx/conf/nginx.conf
-COPY envoy.yaml /etc/envoy.yaml
-COPY haproxy.cfg /etc/haproxy/haproxy.cfg
-COPY Caddyfile /etc/Caddyfile
+COPY nginx.conf /etc/nginx.conf.template
+COPY envoy.yaml /etc/envoy.yaml.template
+COPY haproxy.cfg /etc/haproxy/haproxy.cfg.template
+COPY Caddyfile /etc/Caddyfile.template
 COPY index.html /usr/local/openresty/nginx/html/index.html
 
-RUN mkdir -p /var/run/openresty /var/log/nginx /var/cache/nginx /var/lib/nginx /tmp/nginx
-RUN chown -R root:root /usr/local/openresty /var/run/openresty /var/log/nginx /var/cache/nginx /var/lib/nginx /tmp/nginx
-RUN chmod -R 755 /usr/local/openresty /var/run/openresty /var/log/nginx /var/cache/nginx /var/lib/nginx /tmp/nginx
+# Gumawa ng mga direktoryo at ayusin ang mga pahintulot
+RUN mkdir -p /var/run/openresty /var/log/nginx /var/cache/nginx /var/lib/nginx /tmp/nginx /var/log/xray /var/log/envoy; \
+    chown -R root:root /usr/local/openresty /var/run /var/log /var/cache /var/lib /tmp; \
+    chmod -R 755 /usr/local/openresty /var/run /var/log /var/cache /var/lib /tmp
 
+# Kopyahin ang entrypoint
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod 755 /entrypoint.sh
 
+# Mga Environment Variable (sumusunod sa Cloud Run standard)
 ENV XRAY_LOCATION_ASSET=/usr/local/share/xray/
 ENV PORT=8080
 EXPOSE 8080
@@ -45,3 +56,4 @@ USER root:root
 
 ENTRYPOINT ["/sbin/tini", "--"]
 CMD ["/entrypoint.sh"]
+
