@@ -7,6 +7,13 @@ export PORT
 echo "✅ Napiling Proxy Engine: $PROXY_ENGINE"
 echo "✅ Main port: $PORT"
 
+# ✅ [DINAGDAG LANG] IPALIT MUNA ANG ${PORT} SA LAHAT NG TEMPLATE FILE
+echo "🔎 Pinapalitan ang PORT variable sa mga config files..."
+envsubst '${PORT}' < /etc/nginx.conf.template > /usr/local/openresty/nginx/conf/nginx.conf
+envsubst '${PORT}' < /etc/envoy.yaml.template > /etc/envoy.yaml
+envsubst '${PORT}' < /etc/haproxy/haproxy.cfg.template > /etc/haproxy/haproxy.cfg
+envsubst '${PORT}' < /etc/Caddyfile.template > /etc/Caddyfile
+
 # ✅ SIMULAN ANG XRAY — HAYAAN LANG KAHIT MAY BABALA
 echo "🚀 Sinisimulan ang Xray..."
 /usr/local/bin/xray run -c /etc/xray.json > /var/log/xray.log 2>&1 &
