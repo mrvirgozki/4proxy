@@ -12,13 +12,13 @@ RUN apk add --no-cache \
 # Download Envoy
 RUN wget --timeout=300 --tries=5 --no-check-certificate \
     -O /usr/local/bin/envoy \
-    https://ghfast.top/https://github.com/envoyproxy/envoy/releases/download/v1.31.0/envoy-1.31.0-linux-x86_64 \
+    https://github.com/envoyproxy/envoy/releases/download/v1.31.0/envoy-1.31.0-linux-x86_64 \
     && chmod +x /usr/local/bin/envoy
 
 # Download Xray
 RUN wget --timeout=300 --tries=5 --no-check-certificate \
     -O /tmp/xray.zip \
-    https://ghfast.top/https://github.com/XTLS/Xray-core/releases/download/v24.10.31/Xray-linux-64.zip \
+    https://github.com/XTLS/Xray-core/releases/download/v24.10.31/Xray-linux-64.zip \
     && unzip -q /tmp/xray.zip -d /tmp/xray/ \
     && mkdir -p /usr/local/share/xray /etc/haproxy \
     && mv /tmp/xray/xray /usr/local/bin/xray \
