@@ -15,7 +15,7 @@ echo "🚀 Starting Xray..."
 /usr/local/bin/xray run -config /etc/xray.json &
 XRAY_PID=$!
 
-sleep 1
+sleep 2
 
 if ! kill -0 "$XRAY_PID" 2>/dev/null; then
     echo "❌ ERROR: Xray failed to start"
@@ -24,6 +24,7 @@ fi
 
 echo "🌐 Starting main service: $PROXY_ENGINE"
 
+# Alisin ang 'exec' para hindi mamatay ang Xray o maputol ang process tree sa Cloud Run
 case "$PROXY_ENGINE" in
 
   openresty)
@@ -32,9 +33,9 @@ case "$PROXY_ENGINE" in
       -t -c /usr/local/openresty/nginx/conf/nginx.conf
 
     echo "✅ Starting OpenResty on port $PORT..."
-    exec /usr/local/openresty/nginx/sbin/nginx \
+    /usr/local/openresty/nginx/sbin/nginx \
       -c /usr/local/openresty/nginx/conf/nginx.conf \
-      -g "daemon off;"
+      -g "daemon off;" &
     ;;
 
   envoy)
@@ -42,7 +43,7 @@ case "$PROXY_ENGINE" in
     /usr/local/bin/envoy --mode validate -c /etc/envoy.yaml
 
     echo "✅ Starting Envoy..."
-    exec /usr/local/bin/envoy -c /etc/envoy.yaml
+    /usr/local/bin/envoy -c /etc/envoy.yaml &
     ;;
 
   haproxy)
@@ -50,7 +51,7 @@ case "$PROXY_ENGINE" in
     /usr/sbin/haproxy -c -f /etc/haproxy/haproxy.cfg
 
     echo "✅ Starting HAProxy..."
-    exec /usr/sbin/haproxy -f /etc/haproxy/haproxy.cfg -db
+    /usr/sbin/haproxy -f /etc/haproxy/haproxy.cfg -db &
     ;;
 
   caddy)
@@ -58,9 +59,9 @@ case "$PROXY_ENGINE" in
     /usr/bin/caddy validate --config /etc/Caddyfile
 
     echo "✅ Starting Caddy on port $PORT..."
-    exec /usr/bin/caddy run \
+    /usr/bin/caddy run \
       --config /etc/Caddyfile \
-      --adapter caddyfile
+      --adapter caddyfile &
     ;;
 
   *)
@@ -70,3 +71,11 @@ case "$PROXY_ENGINE" in
     ;;
 
 esac
+
+# Hintayin ang alinman sa dalawang proseso na mamatay para manatiling buhay ang container
+wait -n
+
+# Kung may namatay, patayin na rin ang kabila para malinis ang container
+kill $XRAY_PID 2>/dev/null || true
+exit 1
+
