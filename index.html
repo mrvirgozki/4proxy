@@ -136,7 +136,6 @@
         }
         .tab-btn.active {
             background: var(--bg-card);
-            color: var(--accent);
             box-shadow: 0 2px 8px rgba(0,0,0,0.2);
         }
 
@@ -222,7 +221,7 @@
             transition: all 0.2s;
         }
         .opt-btn:hover { color: var(--text-main); border-color: var(--border-active); }
-        .opt-btn.active { background: var(--accent-glow); border-color: var(--accent); color: var(--accent); }
+        .opt-btn.active { background: var(--accent-glow); border-color: var(--accent); }
 
         .config-area-wrapper { position: relative; }
         .config-textarea {
@@ -363,9 +362,9 @@
             <div class="status-pill"><div class="status-dot"></div>SECURE GATEWAY</div>
         </div>
         <div class="nav-tabs">
-            <button class="tab-btn active" data-tab="tab-dashboard">Dashboard</button>
-            <button class="tab-btn" data-tab="tab-configurator">Payload Studio</button>
-            <button class="tab-btn" data-tab="tab-logs">System Logs</button>
+            <button class="tab-btn active" data-tab="tab-dashboard"><span class="animated-rainbow-text" style="font-weight: 700;">Dashboard</span></button>
+            <button class="tab-btn" data-tab="tab-configurator"><span class="animated-rainbow-text" style="font-weight: 700;">Payload Studio</span></button>
+            <button class="tab-btn" data-tab="tab-logs"><span class="animated-rainbow-text" style="font-weight: 700;">System Logs</span></button>
         </div>
     </div>
 
@@ -398,10 +397,10 @@
         <div class="card">
             <div class="card-header"><span>⚡ Active Proxy Core</span></div>
             <div class="option-grid">
-                <button class="opt-btn active" data-engine="openresty">OpenResty</button>
-                <button class="opt-btn" data-engine="envoy">Envoy</button>
-                <button class="opt-btn" data-engine="haproxy">HAProxy</button>
-                <button class="opt-btn" data-engine="caddy">Caddy</button>
+                <button class="opt-btn active" data-engine="openresty"><span class="animated-rainbow-text" style="font-weight: 700;">OpenResty</span></button>
+                <button class="opt-btn" data-engine="envoy"><span class="animated-rainbow-text" style="font-weight: 700;">Envoy</span></button>
+                <button class="opt-btn" data-engine="haproxy"><span class="animated-rainbow-text" style="font-weight: 700;">HAProxy</span></button>
+                <button class="opt-btn" data-engine="caddy"><span class="animated-rainbow-text" style="font-weight: 700;">Caddy</span></button>
             </div>
         </div>
 
