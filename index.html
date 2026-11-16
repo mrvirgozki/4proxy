@@ -477,6 +477,17 @@
         </div>
     </div>
 
+    <!-- PROXY REMARKS / DETAILS SECTION -->
+    <div class="card" id="proxy-remarks-card">
+        <div class="card-header"><span>📝 Proxy Remarks & Overview</span></div>
+        <div style="display:flex; flex-direction:column; gap:6px; font-size:11px;">
+            <div style="display:flex; justify-content:space-between;"><span style="color:var(--text-muted);">Config Label:</span><span id="remark-tag" style="font-weight:700; color:var(--success);">VIRGOZKI-PRO-GATEWAY</span></div>
+            <div style="display:flex; justify-content:space-between;"><span style="color:var(--text-muted);">Engine Node:</span><span id="remark-engine" style="font-weight:700; color:var(--accent);">OpenResty Core</span></div>
+            <div style="display:flex; justify-content:space-between;"><span style="color:var(--text-muted);">Security / SNI:</span><span id="remark-sni" style="font-weight:700; color:var(--text-main);">---</span></div>
+            <div style="display:flex; justify-content:space-between;"><span style="color:var(--text-muted);">Status Note:</span><span style="font-weight:700; color:var(--success);">Active & Ready for Tunneling</span></div>
+        </div>
+    </div>
+
     <!-- ANIMATED COLOR-SHIFTING FOOTER NOTE -->
     <div class="footer-note">
         <span class="animated-rainbow-text">⚡ POWERED BY VIRGOZKI SECURE GATEWAY • STAY SAFE & ENJOY ⚡</span>
@@ -518,7 +529,7 @@
     const PROTOCOLS = ['vless', 'trojan', 'vmess', 'shadowsocks'];
     const PROTOCOL_LABELS = { vless:'VLESS', trojan:'Trojan', vmess:'VMess', shadowsocks:'Shadowsocks' };
     const TRANSPORTS = ['ws', 'httpupgrade', 'xhttp', 'grpc'];
-    const TRANSPORT_LABELS = { ws:'WebSocket', httpupgrade:'HTTP Upgrade', xhttp:'XHTTP', grpc:'gRPC' };
+    const TRANSPORT_LABELS = { ws:'WS', httpupgrade:'HTTPUPGRADE', xhttp:'XHTTP', grpc:'GRPC' };
 
     const PATHS = { 
         vless: {ws:'/vless-virgozki', httpupgrade:'/vless-virgozki-hu', xhttp:'/vless-virgozki-xhttp', grpc:'vless-grpc-virgozki'}, 
@@ -622,6 +633,9 @@
     const sumProto = document.getElementById('sum-proto');
     const sumTrans = document.getElementById('sum-trans');
     const sumHost = document.getElementById('sum-host');
+    const remarkTag = document.getElementById('remark-tag');
+    const remarkEngine = document.getElementById('remark-engine');
+    const remarkSni = document.getElementById('remark-sni');
 
     function addLog(msg, type = 'info') {
         const time = new Date().toLocaleTimeString('en-US', { hour12: false });
@@ -763,17 +777,20 @@
         let transportParam = `type=${selectedTransport}&path=${encodeURIComponent(path)}&host=${host}`;
         if (selectedTransport === 'grpc') transportParam = `type=grpc&serviceName=${encodeURIComponent(path)}&host=${host}`;
 
+        // Dynamic Proxy Remark Name kasama ang Engine (tulad ng TROJAN-WS-VIRGOZKI-ENVOY)
+        let remarkName = `${PROTOCOL_LABELS[selectedProtocol]}-${TRANSPORT_LABELS[selectedTransport]}-VIRGOZKI-${selectedProxyEngine.toUpperCase()}`;
+
         if (exportFormat === 'clash') {
-            return `proxies:\n  - name: "VIRGOZKI-${selectedProtocol.toUpperCase()}"\n    type: ${selectedProtocol}\n    server: ${addr}\n    port: 443\n    uuid: ${UUID}\n    network: ${selectedTransport}\n    tls: true\n    sni: ${sni}`;
+            return `proxies:\n  - name: "${remarkName}"\n    type: ${selectedProtocol}\n    server: ${addr}\n    port: 443\n    uuid: ${UUID}\n    network: ${selectedTransport}\n    tls: true\n    sni: ${sni}`;
         } else if (exportFormat === 'singbox') {
-            return JSON.stringify({ tag: "virgozki-out", type: selectedProtocol, server: addr, server_port: 443, uuid: UUID, transport: { type: selectedTransport, path: path } }, null, 2);
+            return JSON.stringify({ tag: remarkName, type: selectedProtocol, server: addr, server_port: 443, uuid: UUID, transport: { type: selectedTransport, path: path }, tls: { enabled: true, server_name: sni } }, null, 2);
         }
 
         switch(selectedProtocol) {
-            case 'vless': return `vless://${UUID}@${addr}:443?encryption=none&${transportParam}&security=tls&fp=chrome&sni=${sni}&alpn=${encodeURIComponent(alpn)}#VLESS-${selectedTransport.toUpperCase()}-VIRGOZKI`;
-            case 'trojan': return `trojan://${SS_PASSWORD}@${addr}:443?${transportParam}&security=tls&fp=chrome&sni=${sni}&alpn=${encodeURIComponent(alpn)}#TROJAN-${selectedTransport.toUpperCase()}-VIRGOZKI`;
-            case 'vmess': return `vmess://${btoa(JSON.stringify({v:'2',ps:`VMESS-${selectedTransport.toUpperCase()}-VIRGOZKI`,add:addr,port:'443',id:UUID,aid:'0',scy:'auto',net:selectedTransport,host:host,path:path,tls:'tls',sni:sni})).replace(/=+$/,'')}`;
-            case 'shadowsocks': return `ss://${btoa(`${SS_METHOD}:${SS_PASSWORD}`).replace(/=+$/,'')}@${addr}:443?${transportParam}&security=tls&sni=${sni}#SS-${selectedTransport.toUpperCase()}-VIRGOZKI`;
+            case 'vless': return `vless://${UUID}@${addr}:443?encryption=none&${transportParam}&security=tls&fp=chrome&sni=${sni}&alpn=${encodeURIComponent(alpn)}#${encodeURIComponent(remarkName)}`;
+            case 'trojan': return `trojan://${SS_PASSWORD}@${addr}:443?${transportParam}&security=tls&fp=chrome&sni=${sni}&alpn=${encodeURIComponent(alpn)}#${encodeURIComponent(remarkName)}`;
+            case 'vmess': return `vmess://${btoa(JSON.stringify({v:'2',ps:remarkName,add:addr,port:'443',id:UUID,aid:'0',scy:'auto',net:selectedTransport,host:host,path:path,tls:'tls',sni:sni})).replace(/=+$/,'')}`;
+            case 'shadowsocks': return `ss://${btoa(`${SS_METHOD}:${SS_PASSWORD}`).replace(/=+$/,'')}@${addr}:443?${transportParam}&security=tls&sni=${sni}#${encodeURIComponent(remarkName)}`;
         }
     }
 
@@ -781,6 +798,13 @@
         sumProto.textContent = PROTOCOL_LABELS[selectedProtocol];
         sumTrans.textContent = TRANSPORT_LABELS[selectedTransport];
         sumHost.textContent = selectedAddress;
+
+        // Update Proxy Remarks Card details dynamically
+        let currentRemark = `${PROTOCOL_LABELS[selectedProtocol]}-${TRANSPORT_LABELS[selectedTransport]}-VIRGOZKI-${selectedProxyEngine.toUpperCase()}`;
+        remarkTag.textContent = currentRemark;
+        remarkEngine.textContent = `${selectedProxyEngine.charAt(0).toUpperCase() + selectedProxyEngine.slice(1)} Core`;
+        remarkSni.textContent = selectedSNI;
+
         configDisplay.value = buildConfig();
     }
 
