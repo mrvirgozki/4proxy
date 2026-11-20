@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>VIRGOZKI NEXUS // BENTO GATEWAY</title>
+    <title>VIRGOZKI NEXUS / CONFIG PANEL</title>
     <!-- QR Code Library CDN -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <style>
@@ -818,7 +818,7 @@
         </div>
     </div>
 
-    <!-- 2. PROXY REMARKS & OVERVIEW (PANGALAWA SA TAAS) -->
+    <!-- 2. PROXY REMARKS & OVERVIEW -->
     <div class="bento-box accent-purple" id="proxy-remarks-card">
         <div class="box-header">
             <span class="box-title">📝 Proxy Remarks & Overview</span>
@@ -899,21 +899,6 @@
             </div>
         </div>
 
-        <!-- PROXY CORE PICKER (HIDDEN IN MODAL) -->
-        <div class="bento-box accent-purple">
-            <div class="box-header">
-                <span class="box-title">⚡ Active Proxy Core</span>
-                <span style="font-size: 9px; font-weight: 800; color: var(--purple);">SELECTOR</span>
-            </div>
-            <div class="selector-card" id="engine-btn">
-                <div class="sel-left">
-                    <span class="sel-sub purple-sub">⚙️ Proxy Engine Core</span>
-                    <span class="sel-main" id="engine-btn-text">OpenResty (Lua Edge Proxy)</span>
-                </div>
-                <div class="sel-arrow purple-arrow">▾</div>
-            </div>
-        </div>
-
         <!-- ACTIVE PROFILE SUMMARY -->
         <div class="bento-box">
             <div class="box-header">
@@ -943,6 +928,15 @@
                 <span class="box-title">🎛️ Tunnel Parameters</span>
             </div>
 
+            <!-- Proxy Engine Core Picker (MOVED HERE) -->
+            <div class="selector-card" id="engine-btn">
+                <div class="sel-left">
+                    <span class="sel-sub purple-sub">⚙️ Proxy Engine Core</span>
+                    <span class="sel-main" id="engine-btn-text">OpenResty (Lua Edge Proxy)</span>
+                </div>
+                <div class="sel-arrow purple-arrow">▾</div>
+            </div>
+
             <!-- Bug Host Picker -->
             <div class="selector-card" id="address-btn">
                 <div class="sel-left">
@@ -961,7 +955,7 @@
                 <div class="sel-arrow">▾</div>
             </div>
 
-            <!-- Protocol Type Picker (HIDDEN IN MODAL) -->
+            <!-- Protocol Type Picker -->
             <div class="selector-card" id="proto-btn">
                 <div class="sel-left">
                     <span class="sel-sub purple-sub">🔐 Protocol Type</span>
@@ -970,7 +964,7 @@
                 <div class="sel-arrow purple-arrow">▾</div>
             </div>
 
-            <!-- Transport Medium Picker (HIDDEN IN MODAL) -->
+            <!-- Transport Medium Picker -->
             <div class="selector-card" id="trans-btn">
                 <div class="sel-left">
                     <span class="sel-sub purple-sub">📶 Transport Medium</span>
